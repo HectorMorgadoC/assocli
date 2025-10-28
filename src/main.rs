@@ -1,30 +1,10 @@
-use clap::{Parser, Subcommand};
+use clap::Parser;
 use console::style;
 use dialoguer::{Confirm, Input};
 mod utils;
 use crate::utils::command::utils_command::*;
-
-#[derive(Parser)]
-#[command(
-    name = "asso",
-    version,
-    about = "AssoCLI - Crea proyectos modulares en Rust"
-)]
-struct Cli {
-    #[command(subcommand)]
-    command: Commands,
-}
-
-#[derive(Subcommand)]
-enum Commands {
-    /// Crea un nuevo proyecto modular
-    New {
-        /// Nombre del proyecto
-        name: Option<String>,
-    },
-    /// Muestra información del proyecto
-    Info,
-}
+mod models;
+use crate::models::command::command_model::*;
 
 fn main() {
     let cli = Cli::parse();
@@ -33,6 +13,11 @@ fn main() {
         Commands::New { name } => {
             handle_new(name);
         }
+
+        Commands::Release => {
+            command_release();
+        }
+
         Commands::Info => {
             println!(
                 "{}",
@@ -74,12 +59,29 @@ fn handle_new(name: &Option<String>) {
         );
         let status = cargo_new(&project_name);
 
-        if status.is_some() {
+        if let Some(path) = status {
+            create_actix(&path);
+            create_app_structure(&path);
+            create_env_file(&path);
+            create_env_rs(&path);
+            create_main_rs(&path);
             println!("{}", style("  Proyecto creado").on_bright().bold());
         } else {
             println!("{}", style("  Proyecto no creado").red().bold());
         }
     } else {
         println!("{}", style("❌ Cancelado por el usuario.").red().bold());
+    }
+}
+
+fn command_release() {
+    let path_cargo_toml = find_cargo_root();
+
+    if let Some(path) = path_cargo_toml {
+        run_cargo_command("build", Some("--release"), path.clone());
+        println!("{}", style("  Compilado exitoso").green().bold());
+        lift_release_service(path);
+    } else {
+        println!("{}", style("  Compilado fallido").red().bold());
     }
 }
