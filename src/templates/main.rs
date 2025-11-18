@@ -16,12 +16,6 @@ async fn main() -> io::Result<()> {
     let env_address: &str = &var_env.get_or("ADDRESS", "127.0.0.1");
 
     let server = HttpServer::new(move || App::new());
-
-    let service = server.bind((env_address, env_port)).unwrap().run().await;
-
-    if service.is_ok() {
-        tracing::info!("󰒋 Server running port: {env_port}");
-    }
-
-    service
+    tracing::info!("󰒋 Server starting on {}:{}", env_address, env_port);
+    server.bind((env_address, env_port)).unwrap().run().await
 }

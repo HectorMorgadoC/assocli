@@ -8,11 +8,12 @@ pub fn commands() {
 
     match &cli.command {
         Commands::New { name } => {
-            handle_new(name);
+            let _name = name.clone().unwrap_or("app".to_string());
+            handle_new(&_name);
         }
 
-        Commands::Release => {
-            handler_release();
+        Commands::Release { name_proyect } => {
+            handler_release(name_proyect);
         }
 
         Commands::Info => {
