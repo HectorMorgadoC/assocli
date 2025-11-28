@@ -1,6 +1,8 @@
 use crate::utils::common::{
-    add_dependency::add_dependency, create_dir::create_dir, create_file::create_file,
-    file::load_template,
+    add_dependency::add_dependency,
+    create_dir::create_dir,
+    create_file::create_file,
+    file::{load_template, overwrite_file},
 };
 
 use console::style;
@@ -138,7 +140,7 @@ impl NewProject {
                 let mod_rs_path_str = mod_rs_path.to_str().unwrap();
 
                 if !path.exists() {
-                    create_dir(path);
+                    create_dir(&path);
                 } else {
                     println!(
                         "{}",
@@ -154,11 +156,7 @@ impl NewProject {
             let mod_file_path = app_path.join("mod.rs");
             const CONTENT: &str = "pub mod module;\npub mod shared;\npub mod config;\n";
 
-            std::thread::sleep(std::time::Duration::from_secs(1));
-
-            let common_directory = app_path.join("shared/common");
-
-            create_dir(common_directory);
+            std::thread::sleep(std::time::Duration::from_secs(5));
 
             create_file(mod_file_path, Some(CONTENT));
 
@@ -180,6 +178,29 @@ impl NewProject {
             );
             std::process::exit(1);
         }
+    }
+
+    pub fn create_mod_main(&self) {
+        if !self.project_path.exists() {
+            eprintln!(
+                "{}",
+                style("  Error creating env rs,problems with the project path")
+                    .red()
+                    .bold()
+            );
+            std::process::exit(1)
+        }
+
+        let path_directory_module = self.project_path.join("src/app/module");
+
+        let path_module_main = path_directory_module.join("mod.rs");
+
+        load_template("config_modules.rs", &path_module_main);
+
+        println!(
+            "{}",
+            style("  Main module configuration created").green().bold()
+        );
     }
 
     pub fn create_env_rs(&self) {
@@ -222,7 +243,7 @@ impl NewProject {
             std::process::exit(1)
         }
 
-        load_template("env.rs", env_rs_path);
+        load_template("env.rs", &env_rs_path);
     }
 
     pub fn create_files_common(&self) {
@@ -237,13 +258,63 @@ impl NewProject {
         }
         const CONTENT: &str = "pub mod error;\npub mod validation;";
 
-        let path_common = self.project_path.join("src/app/shared/common");
+        let path_shared = self.project_path.join("src/app/shared");
+        let path_common = path_shared.join("common");
 
-        load_template("error.rs", path_common.join("error.rs"));
+        create_dir(&path_common);
 
-        load_template("validation.rs", path_common.join("validation.rs"));
+        if !path_common.exists() {
+            eprintln!(
+                "{}",
+                style("  Error creating common files, problems with the state directory path")
+                    .red()
+                    .bold()
+            );
+            std::process::exit(1)
+        } else {
+            load_template("error.rs", &path_common.join("error.rs"));
 
-        create_file(path_common.join("mod.rs"), Some(CONTENT));
+            load_template("validation.rs", &path_common.join("validation.rs"));
+
+            create_file(path_common.join("mod.rs"), Some(CONTENT));
+
+            overwrite_file(&path_shared.join("mod.rs"), "pub mod common;\n");
+        }
+    }
+
+    pub fn create_files_state(&self) {
+        if !self.project_path.exists() {
+            eprintln!(
+                "{}",
+                style("  Error creating files state,problems with the project path")
+                    .red()
+                    .bold()
+            );
+            std::process::exit(1)
+        }
+
+        let path_shared = self.project_path.join("src/app/shared");
+        let path_state = path_shared.join("state");
+
+        create_dir(&path_state);
+
+        if !path_state.exists() {
+            eprintln!(
+                "{}",
+                style("  Error creating state files, problems with the state directory path")
+                    .red()
+                    .bold()
+            );
+            std::process::exit(1)
+        } else {
+            load_template("state.rs", &path_state.join("state.rs"));
+
+            let path_mod_state = path_state.join("mod.rs");
+
+            create_file(path_mod_state, Some("pub mod state;\n"));
+
+            overwrite_file(&path_shared.join("mod.rs"), "pub mod state;\n");
+        }
     }
 
     pub fn create_env_file(&self) {
@@ -295,7 +366,7 @@ impl NewProject {
         }
 
         std::thread::sleep(std::time::Duration::from_secs(1));
-        load_template("main.rs", main_path);
+        load_template("main.rs", &main_path);
 
         println!(
             "{}",

@@ -9,6 +9,20 @@ pub fn handler_module(name_module: &str, name_project: &str) {
 
     if let Some(_path) = PROJECT_PATH.as_deref() {
         path_project = std::path::PathBuf::from(_path).join(name_project);
+
+        println!("{}", path_project.display());
+        if !path_project.exists() {
+            eprintln!(
+                "{}",
+                style(format!(
+                    "The project {} does not exist to create module {}",
+                    name_project, name_module
+                ))
+                .on_white()
+                .bold()
+            );
+            std::process::exit(1)
+        }
     } else {
         eprintln!(
             "{}",
@@ -20,10 +34,16 @@ pub fn handler_module(name_module: &str, name_project: &str) {
 
     match choose_module_type(name_module).as_str() {
         "API" => {
-            let _module: NewModule = NewModule::new(path_project.clone(), name_module.to_string());
+            let new_module: NewModule = NewModule::new(
+                path_project
+                    .clone()
+                    .join(format!("src/app/module/{}", name_module)),
+                path_project.clone(),
+                name_module.to_string(),
+            );
 
-            _module.create_folder_module();
-            _module.create_module_files();
+            new_module.create_folder_module();
+            new_module.create_module_files();
         }
         "Template" => println!("template"),
         _ => println!("No pasa nada"),

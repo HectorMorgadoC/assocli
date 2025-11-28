@@ -6,9 +6,10 @@ mod services;
 use super::generic::{
     handlers::handler, repositories::repository::Repository, services::service::Service,
 };
+use crate::app::shared::state::state::AppState;
 use axum::{Router, routing::get};
 
-pub fn configure() -> Router {
+pub fn configure(state: std::sync::Arc<AppState>) -> Router {
     let repositories: Repository = Repository::new();
     let services: std::sync::Arc<Service> = std::sync::Arc::new(Service::new(repositories));
 

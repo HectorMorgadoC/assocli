@@ -1,6 +1,6 @@
 use console::style;
 
-pub fn create_dir(path: std::path::PathBuf) {
+pub fn create_dir(path: &std::path::PathBuf) {
     if std::fs::create_dir_all(&path).is_err() {
         eprintln!(
             "{}",

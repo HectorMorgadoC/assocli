@@ -1,20 +1,12 @@
 mod app;
 use crate::app::config::env::env::Env;
+use crate::app::shared::state::state::AppState;
 use axum::Router;
 use tokio::net::TcpListener;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() {
-    let var_env = Env::init();
-    let env_port: u16 = var_env.get_parsed("PORT").unwrap_or_else(|| 3000);
-    let env_address: &str = &var_env.get_or("ADDRESS", "127.0.0.1");
-    let app = Router::new();
-
-    let listener = TcpListener::bind(format!("{env_address}:{env_port}"))
-        .await
-        .unwrap();
-
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::fmt::layer()
@@ -26,7 +18,20 @@ async fn main() {
         ))
         .init();
 
+    let var_env = Env::init();
+    let env_port: u16 = var_env.get_parsed("PORT").unwrap_or_else(|| 3000);
+    let env_address: &str = &var_env.get_or("ADDRESS", "127.0.0.1");
+
+    let shared_state: std::sync::Arc<AppState> = std::sync::Arc::new(AppState::new());
+    let app = Router::new().nest(
+        "/api",
+        app::module::configure(std::sync::Arc::clone(&shared_state)),
+    );
+
+    let listener = TcpListener::bind(format!("{env_address}:{env_port}"))
+        .await
+        .unwrap();
+
     tracing::info!("󰒋 Server starting on {}:{}", env_address, env_port);
     axum::serve(listener, app).await.unwrap();
 }
-

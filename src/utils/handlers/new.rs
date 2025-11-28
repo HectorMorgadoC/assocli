@@ -1,4 +1,5 @@
 use crate::shared::global::PROJECT_PATH;
+use crate::utils::common::remove_directory::delete_folder;
 use crate::utils::{
     command::new_project::new_project::NewProject, common::clear_terminal::clear_terminal,
 };
@@ -10,7 +11,7 @@ pub fn handle_new(project_name: &str) {
     let path_home = PROJECT_PATH.as_deref();
 
     if let Some(_path) = path_home {
-        let mut path_project = NewProject::new(_path.to_path_buf(), PathBuf::new());
+        let mut new_project = NewProject::new(_path.to_path_buf(), PathBuf::new());
 
         let confirmed = Confirm::new()
             .with_prompt(
@@ -43,18 +44,21 @@ pub fn handle_new(project_name: &str) {
 
             thread::sleep(Duration::from_secs(1));
 
-            if path_project.create_project(project_name) {
-                path_project.create_actix();
-                path_project.create_app_structure();
-                path_project.create_env_file();
-                path_project.create_files_common();
-                path_project.create_env_rs();
-                path_project.create_main_rs();
+            if new_project.create_project(project_name) {
+                new_project.create_actix();
+                new_project.create_app_structure();
+                new_project.create_mod_main();
+                new_project.create_env_file();
+                new_project.create_files_common();
+                new_project.create_files_state();
+                new_project.create_env_rs();
+                new_project.create_main_rs();
                 clear_terminal();
                 println!("{}", style("  Project created.").on_bright().bold());
             } else {
                 //clear_terminal();
                 println!("{}", style("  Project not created.").red().bold());
+                delete_folder(&new_project.project_path, project_name);
             }
         } else {
             println!("{}", style("❌ Cancelled by the user.").red().bold());

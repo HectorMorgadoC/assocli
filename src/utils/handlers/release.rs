@@ -91,7 +91,8 @@ pub fn lift_release_service(cargo_toml_path: PathBuf, path: PathBuf) {
             std::process::exit(1);
         };
 
-        std::thread::sleep(std::time::Duration::from_secs(1));
+        std::thread::sleep(std::time::Duration::from_secs(3));
+        clear_terminal();
         println!(
             "{}",
             style(format!("󰍦  Starting project service: {project_name}")).blue()
@@ -114,7 +115,6 @@ pub fn lift_release_service(cargo_toml_path: PathBuf, path: PathBuf) {
             .spawn(); // Con esto pasa la aplicacion a segundo plano. 
 
         if let Ok(mut _child) = child {
-            clear_terminal();
             println!(
                 "{}",
                 style(format!(

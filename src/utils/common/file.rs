@@ -1,6 +1,6 @@
 use console::style;
 
-pub fn load_template(from: &str, to: std::path::PathBuf) {
+pub fn load_template(from: &str, to: &std::path::PathBuf) {
     const CARGO_CARGO_MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
     let from_path_name = format!("src/templates/{from}");
@@ -18,13 +18,10 @@ pub fn load_template(from: &str, to: std::path::PathBuf) {
         std::process::exit(1)
     }
 
-    println!(
-        "{}",
-        style(format!("  Template: {from} loaded")).green().bold()
-    );
+    println!("{}", style(format!("  file {from} loaded")).green().bold());
 }
 
-pub fn load_template_arg(from: &str, to: std::path::PathBuf, name: &str) {
+pub fn load_template_arg(from: &str, to: &std::path::PathBuf, name: &str) {
     const CARGO_MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
 
     let from_path_name = format!("src/templates/{from}");
@@ -54,7 +51,7 @@ pub fn load_template_arg(from: &str, to: std::path::PathBuf, name: &str) {
 
         println!(
             "{}",
-            style(format!("  Template: {from} loaded as {struct_name}"))
+            style(format!("  file {from} loaded as {struct_name}"))
                 .green()
                 .bold()
         );
@@ -67,6 +64,57 @@ pub fn load_template_arg(from: &str, to: std::path::PathBuf, name: &str) {
         );
         std::process::exit(1);
     }
+}
+
+pub fn overwrite_file(path: &std::path::PathBuf, content: &str) {
+    if !path.exists() {
+        eprintln!(
+            "{}",
+            style(format!(
+                "  Error writing file, path {} does not exist",
+                path.display()
+            ))
+            .red()
+            .bold()
+        );
+        std::process::exit(1)
+    }
+    let content_mod = std::fs::read_to_string(path);
+
+    if content_mod.is_err() {
+        eprintln!(
+            "{}",
+            style(format!(
+                "  Failure to read the content of {}",
+                path.display()
+            ))
+            .red()
+            .bold()
+        );
+        std::process::exit(1)
+    }
+
+    if let Ok(_content) = content_mod {
+        let new_content = format!("{}\n{}", _content, content);
+        if std::fs::write(path, new_content).is_err() {
+            eprintln!(
+                "{}",
+                style(format!("  The file writing failed {}", path.display()))
+                    .red()
+                    .bold()
+            );
+            std::process::exit(1)
+        }
+
+        println!(
+            "{}",
+            style(format!("  File {} modified successfully", path.display()))
+                .green()
+                .bold()
+        );
+    }
+
+    std::thread::sleep(std::time::Duration::from_secs(1));
 }
 
 fn capitalize_first(s: &str) -> String {

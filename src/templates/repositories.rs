@@ -9,7 +9,7 @@ pub(crate) mod repository {
         }
 
         pub fn get_all(&self) -> Result<Vec<GENERIC>, ()> {
-            let list: Vec<Product> = vec![GENERIC { id: 1 }, GENERIC { id: 2 }, GENERIC { id: 3 }];
+            let list: Vec<GENERIC> = vec![GENERIC { id: 1 }, GENERIC { id: 2 }, GENERIC { id: 3 }];
             Ok(list)
         }
 
