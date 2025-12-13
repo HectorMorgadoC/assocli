@@ -17,12 +17,7 @@ fn run_cargo_command(arg: &str, optional_arg: Option<&str>, name_project: String
         let cargo_toml = dir_project.join("Cargo.toml");
 
         if !cargo_toml.exists() {
-            eprintln!(
-                "{}",
-                style("  Error: Cargo.toml file is not present in the project")
-                    .red()
-                    .bold()
-            );
+            eprintln!("{}", style("  The project does not exist").red().bold());
             process::exit(1);
         }
 

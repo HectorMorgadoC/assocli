@@ -36,7 +36,7 @@ pub fn load_template_arg(from: &str, to: &std::path::PathBuf, name: &str) {
         content = content.replace("generic", name);
         content = content.replace("GENERIC", &struct_name);
 
-        if std::fs::write(&to, content).is_err() {
+        if std::fs::write(to, content).is_err() {
             eprintln!(
                 "{}",
                 style(format!(

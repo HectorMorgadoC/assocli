@@ -12,10 +12,16 @@ pub fn commands() {
             new::handle_new(&_name);
         }
 
-        Commands::Release {
-            project: name_proyect,
+        Commands::Run {
+            project: name_project,
         } => {
-            release::handler_release(name_proyect);
+            run::handler_run(name_project);
+        }
+
+        Commands::Release {
+            project: name_project,
+        } => {
+            release::handler_release(name_project);
         }
 
         Commands::Module { name, project } => {

@@ -3,7 +3,7 @@ use console::style;
 pub fn clear_terminal() {
     if cfg!(windows) {
         let clear = std::process::Command::new("cmd")
-            .args(&["/C", "cls"])
+            .args(["/C", "cls"])
             .status();
 
         if clear.is_err() {

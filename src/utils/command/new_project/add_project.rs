@@ -97,6 +97,8 @@ impl NewProject {
             std::thread::sleep(std::time::Duration::from_secs(1));
             add_dependency("tracing", None, project_path);
             std::thread::sleep(std::time::Duration::from_secs(1));
+            add_dependency("tower-http", Some("fs"), project_path);
+            std::thread::sleep(std::time::Duration::from_secs(1));
 
             add_dependency(
                 "tracing-subscriber",
@@ -328,7 +330,7 @@ impl NewProject {
             std::process::exit(1)
         }
 
-        const CONTENT: &str = r#"ADDRESS="127.0.0.1"
+        const CONTENT: &str = r#"ADDRESS="0.0.0.0"
         PORT=3000
         "#;
 
@@ -371,6 +373,24 @@ impl NewProject {
         println!(
             "{}",
             style("  main.rs created successfully").green().bold()
+        );
+    }
+
+    pub fn add_root_template(&self) {
+        let static_path = self.project_path.join("templates/static");
+
+        std::thread::sleep(std::time::Duration::from_secs(1));
+
+        create_dir(&static_path);
+
+        load_template("static/index.html", &static_path.join("index.html"));
+        load_template("static/styles.css", &static_path.join("style.css"));
+
+        println!(
+            "{}",
+            style("  index.html in the root has been added")
+                .green()
+                .bold()
         );
     }
 }

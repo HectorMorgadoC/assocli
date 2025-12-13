@@ -1,4 +1,5 @@
 pub mod add_dependency;
+//pub mod check_cargo_toml;
 pub mod clear_terminal;
 pub mod create_dir;
 pub mod create_file;

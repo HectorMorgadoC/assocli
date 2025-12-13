@@ -1,7 +1,7 @@
 use crate::shared::global::PROJECT_PATH;
 use crate::utils::common::remove_directory::delete_folder;
 use crate::utils::{
-    command::new_project::new_project::NewProject, common::clear_terminal::clear_terminal,
+    command::new_project::add_project::NewProject, common::clear_terminal::clear_terminal,
 };
 use console::style;
 use dialoguer::Confirm;
@@ -53,6 +53,7 @@ pub fn handle_new(project_name: &str) {
                 new_project.create_files_state();
                 new_project.create_env_rs();
                 new_project.create_main_rs();
+                new_project.add_root_template();
                 clear_terminal();
                 println!("{}", style("  Project created.").on_bright().bold());
             } else {

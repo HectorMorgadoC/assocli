@@ -1,8 +1,5 @@
 use console::style;
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::{fs, path::PathBuf};
 
 pub fn create_file(path: PathBuf, content: Option<&str>) {
     /*

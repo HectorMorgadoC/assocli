@@ -16,11 +16,11 @@ pub(crate) struct BlockState {
     template: std::sync::Arc<Tera>,
 }
 
-pub fn configure(state: std::sync::Arc<AppState>) -> Router {
+pub fn configure(_state: std::sync::Arc<AppState>) -> Router {
     let repositories: Repository = Repository::new();
     let services: std::sync::Arc<Service> = std::sync::Arc::new(Service::new(repositories));
 
-    let templates = std::sync::Arc::new(state.templates.tera.clone());
+    let templates = std::sync::Arc::new(_state.templates.tera.clone());
 
     let blockstate: BlockState = BlockState {
         service: std::sync::Arc::clone(&services),

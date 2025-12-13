@@ -1,7 +1,7 @@
 use console::style;
 
 pub fn create_dir(path: &std::path::PathBuf) {
-    if std::fs::create_dir_all(&path).is_err() {
+    if std::fs::create_dir_all(path).is_err() {
         eprintln!(
             "{}",
             style(format!("  Error creating directory {}", &path.display()))

@@ -1,5 +1,5 @@
 use crate::utils::common::{
-    add_dependency::{self, add_dependency},
+    add_dependency::add_dependency,
     create_dir::create_dir,
     create_file::create_file,
     file::{load_template, load_template_arg, modify_file, overwrite_file},
@@ -43,7 +43,7 @@ impl NewTemplate {
 
         if let Some(path) = project_path {
             add_dependency("tera", None, path);
-            add_dependency("tower-http", Some("fs"), path);
+            std::thread::sleep(std::time::Duration::from_secs(1));
         } else {
             eprintln!(
                 "{}",
@@ -349,52 +349,6 @@ impl AppState {
         }
     }
 
-    pub fn reconfigure_file_main(&self) {
-        println!("{}", style("  Configuring file main...").blue().bold());
-        std::thread::sleep(std::time::Duration::from_secs(2));
-
-        let path_file_main =
-            std::path::PathBuf::new().join(format!("{}/src/main.rs", &self.project_path.display()));
-
-        let add_dependency: (String, String) = (
-            r###"use tokio::net::TcpListener;"###.to_string(),
-            r###"use tokio::net::TcpListener;
-use tower_http::services::ServeDir;"###
-                .to_string(),
-        );
-
-        let add_content: (String, String) = (
-            r###"let app = Router::new()"###.to_string(),
-            r###"let app = Router::new()
-        .nest_service("/static", ServeDir::new("templates/static"))"###
-                .to_string(),
-        );
-
-        if let Ok(content) = std::fs::read_to_string(&path_file_main) {
-            if !content.contains(r###"use tower_http::services::ServeDir;"###) {
-                modify_file(&path_file_main, &add_dependency.0, &add_dependency.1);
-            }
-
-            if !content
-                .contains(r###".nest_service("/static", ServeDir::new("templates/static"))""###)
-            {
-                modify_file(&path_file_main, &add_content.0, &add_content.1);
-            }
-        } else {
-            eprintln!(
-                "{}",
-                style(format!(
-                    "  Error reading content {}",
-                    &path_file_main.display()
-                ))
-                .red()
-                .bold()
-            );
-
-            std::process::exit(1)
-        }
-    }
-
     pub fn reconfigure_module_shared(&self) {
         println!("{}", style("  Configuring module shared...").blue().bold());
         std::thread::sleep(std::time::Duration::from_secs(2));
@@ -451,7 +405,7 @@ pub mod template;"###
             format!(
                 "Router::new()\n\t\t.nest(\"/{}\", {{
             tracing::info!(\"  ├─ 󰕳 Starting module configuration {}....\");
-            {}::configure(std::sync::Arc::clone(&state))
+            {}::configure(std::sync::Arc::clone(&_state))
         }})",
                 self.name_module, self.name_module, self.name_module
             ),

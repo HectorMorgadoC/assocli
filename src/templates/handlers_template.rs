@@ -1,9 +1,6 @@
 pub(crate) mod handler {
 
-    use super::super::{
-        BlockState,
-        models::model::dto::{CreateUpdateGENERIC, GENERIC},
-    };
+    use super::super::{BlockState, models::model::dto::CreateUpdateGENERIC};
     use crate::app::shared::common::error::err_render;
 
     use axum::{

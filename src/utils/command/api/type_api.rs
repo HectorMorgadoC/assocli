@@ -130,7 +130,7 @@ impl NewModule {
             format!(
                 "Router::new()\n\t\t.nest(\"/{}\", {{
             tracing::info!(\"  ├─ 󰕳 Starting module configuration {}....\");
-            {}::configure(std::sync::Arc::clone(&state))
+            {}::configure(std::sync::Arc::clone(&_state))
         }})",
                 self.name_module, self.name_module, self.name_module
             ),

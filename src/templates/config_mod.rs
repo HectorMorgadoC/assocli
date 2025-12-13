@@ -9,7 +9,7 @@ use super::generic::{
 use crate::app::shared::state::state::AppState;
 use axum::{Router, routing::get};
 
-pub fn configure(state: std::sync::Arc<AppState>) -> Router {
+pub fn configure(_state: std::sync::Arc<AppState>) -> Router {
     let repositories: Repository = Repository::new();
     let services: std::sync::Arc<Service> = std::sync::Arc::new(Service::new(repositories));
 

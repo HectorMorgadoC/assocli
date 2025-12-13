@@ -3,7 +3,6 @@ use crate::{
     utils::{
         command::{api::type_api::NewModule, template::type_template::NewTemplate},
         common::selection_module_type::choose_module_type,
-        handlers::new,
     },
 };
 use console::style;
@@ -69,7 +68,6 @@ pub fn handler_module(name_module: &str, name_project: &str) {
             new_module_template.reconfigure_file_handler_error();
             new_module_template.reconfigure_file_state();
             new_module_template.reconfigure_module_shared();
-            new_module_template.reconfigure_file_main();
         }
         _ => println!("No pasa nada"),
     }
